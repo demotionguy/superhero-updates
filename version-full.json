@@ -1,0 +1,131 @@
+{
+ "version": "3.7.0",
+ "notes": "POORA CONSOLIDATED UPDATE: Apna Dimaag + Skills + Seekhne ki Diary + Tasks + Creator Suraksha Lock + Gyaan-Yaad/Research/Khud Skill + Field Packs (roz 15-20) + 5 GB Storage Seema + Ek-Folder Portable + andar chhupa engine. Memory/skills ko haath nahi lagta.",
+ "files": [
+  {
+   "path": "superhero_web.py",
+   "url": "superhero_web.py",
+   "sha256": "615237cb7b1301ec602ce2832c7439d3da4d33028dec6194e10b9973aa86b48b"
+  },
+  {
+   "path": "skills.py",
+   "url": "skills.py",
+   "sha256": "06286b2fbf741d0d03765f82a1d6659971a4d39b47cc0fb190b0416329a0475c"
+  },
+  {
+   "path": "apna_dimaag.py",
+   "url": "apna_dimaag.py",
+   "sha256": "7b1206699eadec538273595b71ee454903e3b3c3d5469571e5afff573a5344f0"
+  },
+  {
+   "path": "diary.py",
+   "url": "diary.py",
+   "sha256": "b734621a29afb5cf29a9433c8a8f9c846298aafb36d2297c3e590fab102652c5"
+  },
+  {
+   "path": "tasks.py",
+   "url": "tasks.py",
+   "sha256": "dda11feb6802fda8c0c04589440b6ad1c930e071ce8e871b5c45da68d97cdbc2"
+  },
+  {
+   "path": "research.py",
+   "url": "research.py",
+   "sha256": "b8fa71b203db439c678b1d918955b3a7eb3f187b24befd4e31ffc1b9a95d5597"
+  },
+  {
+   "path": "fields.py",
+   "url": "fields.py",
+   "sha256": "06d357926170c6e3eaf8246a205b3ae1740039b78b9706af6ea444b4b641e8d3"
+  },
+  {
+   "path": "storage.py",
+   "url": "storage.py",
+   "sha256": "5b4e789dceb49fe86e4a6074208f85ecc8fcadf347be926e6b820cfa5c5b1fec"
+  },
+  {
+   "path": "updater.py",
+   "url": "updater.py",
+   "sha256": "36db529be395381871b71dfc9f418c9db0cca4dc006a23b5ff6170dc2c97475d"
+  },
+  {
+   "path": "superhero.py",
+   "url": "superhero.py",
+   "sha256": "a5a2673c03c0fb35ca4b5ea1d3a15ca100c9e21b6bea7cd6af45cd3cf22323db"
+  },
+  {
+   "path": "superhero_app.py",
+   "url": "superhero_app.py",
+   "sha256": "fdccd3a836e76d5efdfb2d18c3f7fe329541324fca1b897054621390d68e3641"
+  },
+  {
+   "path": "IDENTITY.md",
+   "url": "IDENTITY.md",
+   "sha256": "7a61355811ef535ccfd0d0c35f7c23170c267481b5ec6e15a84245fa51712203"
+  },
+  {
+   "path": "APNA-DIMAAG.md",
+   "url": "APNA-DIMAAG.md",
+   "sha256": "709d52b675738e4c6f890ac6713d2ba9f05bc7c49d90f7ef5ba80fbedf3125b1"
+  },
+  {
+   "path": "SKILLS-SYSTEM.md",
+   "url": "SKILLS-SYSTEM.md",
+   "sha256": "8836f420ece07db6cd75c11679092710a33253d146151d18101502b5ccb4e627"
+  },
+  {
+   "path": "CREATOR-LOCK.md",
+   "url": "CREATOR-LOCK.md",
+   "sha256": "e458ba9a314dcfa2a92b2ddde4f5cc935a25088e6583a72bb509965a7a41fde9"
+  },
+  {
+   "path": "RESEARCH.md",
+   "url": "RESEARCH.md",
+   "sha256": "ed006d6999a26b61ba9b931984629b46bf77bac2aff19a16f4ca3c7e1a008a8b"
+  },
+  {
+   "path": "FIELDS.md",
+   "url": "FIELDS.md",
+   "sha256": "fe45689d00f053bf55f192be304723c75fb4a8458100da41f4b8b0262d24c7af"
+  },
+  {
+   "path": "PORTABLE.md",
+   "url": "PORTABLE.md",
+   "sha256": "b4b660cb8cd763067ac5230f0bf1f5307cf418a52371408276955034b282b0a6"
+  },
+  {
+   "path": "FEATURES.md",
+   "url": "FEATURES.md",
+   "sha256": "2b01ba584966facab35fe37f20e653051c45826547951d93d7c5809b6dfd9273"
+  },
+  {
+   "path": "START-HERE.md",
+   "url": "START-HERE.md",
+   "sha256": "51c5b4364755fe3850738dbb8fbade3aabe6481853b1e616c36a6e3765463519"
+  },
+  {
+   "path": "CONTROL.md",
+   "url": "CONTROL.md",
+   "sha256": "7414fad06f32074e4d122da1b83424c2f6eebc722a75674f00314b3a9c7da526"
+  },
+  {
+   "path": "Dimaag-Lagao.bat",
+   "url": "Dimaag-Lagao.bat",
+   "sha256": "e5e367f5c06b9b4b3238665dcd5db8a617a144ebdd53cd0ec22a8df7a3c0a830"
+  },
+  {
+   "path": "Superhero-Start-Karo.bat",
+   "url": "Superhero-Start-Karo.bat",
+   "sha256": "af2dd4011d42508509d7c6e912833f3e021f503899168747b8dc98ce5ab5aa05"
+  },
+  {
+   "path": "Superhero-App.bat",
+   "url": "Superhero-App.bat",
+   "sha256": "bb95928c20d1b36974ac9ab3dac7dde7dd448f487df605ee885bc70c31b919bd"
+  },
+  {
+   "path": "version.txt",
+   "url": "version.txt",
+   "sha256": ""
+  }
+ ]
+}
