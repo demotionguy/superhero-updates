@@ -1,6 +1,6 @@
 {
- "version": "3.7.0",
- "notes": "POORA CONSOLIDATED UPDATE: Apna Dimaag + Skills + Seekhne ki Diary + Tasks + Creator Suraksha Lock + Gyaan-Yaad/Research/Khud Skill + Field Packs (roz 15-20) + 5 GB Storage Seema + Ek-Folder Portable + andar chhupa engine. Memory/skills ko haath nahi lagta.",
+ "version": "3.7.1",
+ "notes": "v3.7.1 SUDHAAR: Dimaag-Lagao download ab resume wala hai — internet beech me tute to download wahi se aage badhta hai, shuru se nahi; adhoori file par install kabhi nahi hota. Baaki sab v3.7.0 jaisa hi. Memory/skills ko haath nahi lagta.",
  "files": [
   {
    "path": "superhero_web.py",
@@ -110,7 +110,7 @@
   {
    "path": "Dimaag-Lagao.bat",
    "url": "Dimaag-Lagao.bat",
-   "sha256": "e5e367f5c06b9b4b3238665dcd5db8a617a144ebdd53cd0ec22a8df7a3c0a830"
+   "sha256": "833113b03391509031980a582170ae787de6f90efb25558c5e7fe78de1cc964d"
   },
   {
    "path": "Superhero-Start-Karo.bat",
