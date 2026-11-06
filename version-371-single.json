@@ -1,0 +1,16 @@
+{
+ "version": "3.7.1",
+ "notes": "v3.7.1 SUDHAAR: Dimaag-Lagao download ab resume wala hai — internet beech me tute to download wahi se aage badhta hai, shuru se nahi; adhoori file par install kabhi nahi hota. Baaki sab v3.7.0 jaisa hi. Memory/skills ko haath nahi lagta.",
+ "files": [
+  {
+   "path": "Dimaag-Lagao.bat",
+   "url": "Dimaag-Lagao.bat",
+   "sha256": "833113b03391509031980a582170ae787de6f90efb25558c5e7fe78de1cc964d"
+  },
+  {
+   "path": "version.txt",
+   "url": "version.txt",
+   "sha256": ""
+  }
+ ]
+}
