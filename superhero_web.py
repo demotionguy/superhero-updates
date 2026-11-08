@@ -553,7 +553,7 @@ SETUP_PAGE = """<!DOCTYPE html>
 <body><div class="center"><form class="card" method="post" action="/setup">
 <button type="button" class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Dark / Light">🌙</button>
 __ORB__
-<h1>Namaste, Hy <span class="star">★</span></h1>
+<h1>Namaskar, Hy <span class="star">★</span></h1>
 <p>Superhero abhi abhi jaaga hai. Uska darwaza pehli baar band karna hai —<br>
 ek mazboot password rakho. Yehi password hamesha lagega, isliye yaad rakhna.</p>
 <div class="err">__ERROR__</div>
@@ -596,7 +596,7 @@ CHAT_PAGE = """<!DOCTYPE html>
 </aside>
 <div class="main">
   <div class="greet"><div class="orb-wrap"><div class="orb" id="orb" style="width:86px;height:86px"><div class="glow"></div><div class="particles" id="particles"></div><div class="ring"></div><div class="ring r2"></div><div class="core"><img src="/logo.png" alt="Superhero"></div></div></div>
-  <h1 style="text-align:center">Namaste, Hy <span class="star">★</span></h1>
+  <h1 style="text-align:center">Namaskar, Hy <span class="star">★</span></h1>
   <p style="text-align:center">Kuch bolo — mai sun raha hoon. Jo sikhaoge, hamesha yaad rahega.<br><b>Unlimited • No Token • Offline</b> — jitna chalao, utna chalega.</p></div>
   <div id="chat"></div>
   <form class="composer" onsubmit="return sendMsg(event)">
@@ -624,7 +624,7 @@ function addTyping(){
   div.innerHTML = '<span class="who">SUPERHERO</span><span class="typing"><i></i><i></i><i></i></span> soch raha hoon...';
   chat.appendChild(div); scrollDown(true); return div;
 }
-addMsg('Superhero', 'Namaste Hy! Mai Superhero hoon — tumhara apna. Kuch bolo, sikhao, ya koi seekha hua kaam karne ko kaho.');
+addMsg('Superhero', 'Namaskar Hy! Mai Superhero hoon — tumhara apna. Kuch bolo, sikhao, ya koi seekha hua kaam karne ko kaho.');
 function sendMsg(ev){
   ev.preventDefault();
   var text = box.value.trim();
@@ -919,7 +919,7 @@ def _study_command(user_text):
 
 
 _SALAAM_SET = {"hy", "hii", "hiii", "hello", "helloo", "hi", "hey", "namaste",
-               "namaskar", "salam", "salaam", "ram ram", "good morning",
+               "namaskar", "ram ram", "good morning",
                "good afternoon", "good evening", "namaste daddy", "hello daddy"}
 _HAAL_SET = {"kaise ho", "kya haal hai", "kaisa hai", "aur batao", "kya haal",
              "kaise ho daddy", "tum kaise ho"}
@@ -935,7 +935,7 @@ def _greeting_reply(user_text):
     if low in _HAAL_SET:
         return f"Main badhiya hoon {naam}, aap sunao — kya chal raha hai?"
     if low in _SALAAM_SET:
-        return f"Namaste {naam}! Kya haal hai? Batao, aaj kya karna hai?"
+        return f"Namaskar {naam}! Kya haal hai? Batao, aaj kya karna hai?"
     return None
 
 
