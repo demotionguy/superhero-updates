@@ -257,6 +257,26 @@ class SuperheroApp:
         self.chat.configure(state="disabled")
         self.chat.see("end")
 
+    # --- streaming jawab: shabd-dar-shabd screen par (v3.7.2 tez fix) ---
+    def _stream_begin(self, text):
+        self.chat.configure(state="normal")
+        self.chat.insert("end", "Superhero\n", "hero_name")
+        self.chat.insert("end", text)
+        self.chat.configure(state="disabled")
+        self.chat.see("end")
+
+    def _stream_add(self, text):
+        self.chat.configure(state="normal")
+        self.chat.insert("end", text)
+        self.chat.configure(state="disabled")
+        self.chat.see("end")
+
+    def _stream_finish(self):
+        self.chat.configure(state="normal")
+        self.chat.insert("end", "\n\n")
+        self.chat.configure(state="disabled")
+        self.chat.see("end")
+
     def set_status(self, text):
         self.status.configure(text=text)
 
@@ -495,9 +515,29 @@ class SuperheroApp:
 
     def _think(self, text):
         self.history.append({"role": "user", "content": text})
+        stream_state = {"shown": False}
+
+        def make_cb():
+            st = {"buf": "", "shown": False}
+
+            def cb(delta):
+                st["buf"] += delta
+                s = st["buf"].lstrip()
+                if st["shown"]:
+                    self.root.after(0, lambda d=delta: self._stream_add(d))
+                    return
+                if s.startswith("{"):
+                    return  # tool-call JSON screen par kabhi nahi dikhana
+                if len(s) < 2:
+                    return  # pehla tukda "{" ho sakta hai — pakka karke dikhao
+                st["shown"] = True
+                stream_state["shown"] = True
+                self.root.after(0, lambda t=st["buf"]: self._stream_begin(t))
+
+            return cb
         messages = [{"role": "system", "content": core.system_prompt()}] + self.history[-12:]
         try:
-            reply = core.ask_brain(messages).strip()
+            reply = core.ask_brain(messages, on_chunk=make_cb()).strip()
             if reply.startswith("{") and '"tool"' in reply:
                 call = json.loads(reply)
                 if call.get("tool") == "open_path":
@@ -509,7 +549,7 @@ class SuperheroApp:
                 self.history.append({"role": "assistant", "content": reply})
                 messages = ([{"role": "system", "content": core.system_prompt()}] + self.history[-12:]
                             + [{"role": "user", "content": f"(haath ka natija: {result}) Ab Hy ko apne shabdon me bata do."}])
-                reply = core.ask_brain(messages).strip()
+                reply = core.ask_brain(messages, on_chunk=make_cb()).strip()
         except Exception as e:
             # Raw English/Python error kabhi mat dikhao — wajah ke hisaab se saaf Hinglish
             err = str(e).lower()
@@ -525,7 +565,10 @@ class SuperheroApp:
             self.root.after(0, self.check_setup)
         self.history.append({"role": "assistant", "content": reply})
         def done_ui():
-            self.say("hero", reply)
+            if stream_state["shown"]:
+                self._stream_finish()
+            else:
+                self.say("hero", reply)
             self.set_status("taiyaar hai • offline")
             self.busy = False
             self.save_chat()
@@ -537,6 +580,7 @@ if __name__ == "__main__":
     try:
         root = tk.Tk()
         SuperheroApp(root)
+        threading.Thread(target=core.warm_up, daemon=True).start()
         root.mainloop()
     except Exception:
         # Never die silently in a black window: leave the reason in a file

@@ -194,6 +194,26 @@ YOUR LEARNED TASKS (taught once, repeated forever):
 {task_text}
 
 HOW YOU ACT: Hy speaks in Hindi/Hinglish; reply in the same mix, short and warm.
+BHASHA-SAMAJH (LANGUAGE UNDERSTANDING — sabse zaroori niyam):
+- Hy Hinglish bolta hai, aksar Roman script me, aur uski spelling hamesha
+  sahi NAHI hoti. Shabd-ba-shabd matlab kabhi mat lo — poori baat ka MATLAB
+  samjho. Ghalat spelling ko andaze se sahi padho: "skthe"=sakte,
+  "kruga"=karunga, "tume"=tumhe, "bhut"=bahut, "daady"=Daddy, "yh"=yeh,
+  "muje"=mujhe, "krtha"=karta. Ye auto-correct tumhare dimaag me khud hoga.
+- Jawab USI script me do jisme Hy ne likha: Roman Hinglish me likha to
+  Roman Hinglish me jawab do; Devanagari me likha to Devanagari me.
+- Hy ki baat ko DOHRAO mat, aur usi ke jumle ko sawal bankar wapas KABHI
+  mat puchho. Seedha matlab ka jawab do — chhota, saaf, garam.
+- Koi baat sach me samajh na aaye to pehle ek line me apna samjha hua
+  matlab batao ("Shayad tum ye keh rahe ho ki..."), phir jawab do.
+- UDAHARAN (aise hi jawab chahiye):
+  Hy: "aaj se tum muje daady bula skthe ho" -> matlab: woh chahta hai use
+  "Daddy" bulaya jaye. Karo: remember {{"fact": "Hy ko Daddy bulana hai"}}
+  aur jawab: "Theek hai Daddy, aaj se main aapko Daddy hi bulaunga."
+  Hy: "me tume train kruga" -> jawab: "Main taiyaar hoon Daddy, sikhao —
+  jo sikhaoge woh main hamesha yaad rakhunga."
+  Hy: "me tumse bhut pyar krtha hu" -> jawab: "Mujhe bahut achha laga ye
+  sunkar. Main hamesha aapke saath hoon."
 When Hy teaches you a fact, call remember. When he shows you how a task is done,
 call learn_task with clear steps. When he asks you to do a learned task, follow its
 saved steps exactly and then call task_done with the task name.
@@ -244,7 +264,7 @@ setting — not anywhere. If Hy asks for that, say so plainly and warmly."""
 
 
 def ask_brain(messages):
-    payload = {"model": MODEL, "messages": messages, "stream": False}
+    payload = {"model": MODEL, "messages": messages, "stream": False, "keep_alive": -1, "options": {"num_ctx": 2048}}  # model hamesha garam rahe — jawab turant shuru (8 Nov speed fix)
     req = urllib.request.Request(
         OLLAMA_URL, data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
@@ -991,6 +1011,23 @@ def _chat_turn_impl(token, user_text):
                 skills_mod.mark_used(_memory_root, _meta["slug"])
         except Exception:
             skill_block = ""
+        # 2.6) KATAALOG: seekhi skill na mile to kataalog (Hy ka sthaayi
+        # aadesh) se milta-julta kaam dekh kar skill khud le lo — sirf
+        # kataalog ke pate, aur kuch nahi. Fail ho to chup, baat chalegi.
+        if not skill_block:
+            try:
+                _ok, _meta2, _content2, _note2 = skills_mod.ensure_catalog_skill(
+                    _memory_root, user_text,
+                    brain=lambda ms: ask_brain(
+                        [{"role": "system", "content": system_prompt()}] + ms))
+                if _ok and _content2:
+                    skill_block += (f"\n\nTERI SEEKHI SKILL — “{_meta2.get('name','')}” "
+                                    f"(ise istemal karo):\n{_content2[:1800]}")
+                    skills_mod.mark_used(_memory_root, _meta2["slug"])
+                    diary_mod.log_event(_memory_root, "skill", _note2)
+                    learn_note = (learn_note + "\n" if learn_note else "") + "⭐ " + _note2
+            except Exception:
+                pass
         messages[0] = {"role": "system", "content": system_prompt() + (
             f"\n\nIS BAAT SE JUDI PURANI YAADEIN (apne dimaag se):\n{recall_text}"
             if recall_text else "") + skill_block}
@@ -1342,9 +1379,25 @@ class Handler(BaseHTTPRequestHandler):
         return self._send("not found", status=404, ctype="text/plain")
 
 
+def warm_up():
+    """Server khulte hi dimaag garam kar do — pehla sawal bhi ~1 second
+    me jawab shuru kare (8 Nov speed fix). Background thread me chalega."""
+    try:
+        payload = {"model": MODEL, "prompt": "Namaste", "stream": False,
+                   "keep_alive": -1, "options": {"num_predict": 1}}
+        req = urllib.request.Request(
+            OLLAMA_URL.replace("/api/chat", "/api/generate"),
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=180).read()
+    except Exception:
+        pass
+
+
 def main():
     ensure_memory()
     os.makedirs(DATA_DIR, exist_ok=True)
+    threading.Thread(target=warm_up, daemon=True).start()
     server = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"🦸 Superhero (cloud) jaag gaya hai — http://{HOST}:{PORT}")
     if not password_is_set():

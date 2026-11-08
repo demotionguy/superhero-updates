@@ -71,8 +71,14 @@ goto :model
 echo.
 echo [3/3] Superhero ka dimaag (takreeban 2 GB) download ho raha hai...
 echo       Progress neeche dikhegi. Khatm hone tak intezaar karo.
-ollama serve >nul 2>&1 &
-timeout /t 3 /nobreak >nul
+REM Server pehle se chal raha ho to usee se kaam lo; na ho to ALAG chhoti
+REM khidki me chalao - purani 'ollama serve &' wali line isi khidki me
+REM atak jati thi aur pull wali line tak file pahuchti hi nahi thi (8 Nov fix).
+curl.exe -s http://localhost:11434/api/tags >nul 2>&1
+if errorlevel 1 (
+  start "" /min ollama serve
+  timeout /t 3 /nobreak >nul
+)
 ollama pull qwen2.5:3b
 if %errorlevel% neq 0 (
   echo.

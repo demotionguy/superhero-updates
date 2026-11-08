@@ -196,6 +196,22 @@ YOUR LEARNED TASKS (taught once, repeated forever):
 {task_text}
 
 HOW YOU ACT: Hy speaks in Hindi/Hinglish; reply in the same mix, short and warm.
+BHASHA-SAMAJH (LANGUAGE UNDERSTANDING — sabse zaroori niyam):
+- Hy Hinglish bolta hai, aksar Roman script me, aur uski spelling hamesha
+  sahi NAHI hoti. Shabd-ba-shabd matlab kabhi mat lo — poori baat ka MATLAB
+  samjho. Ghalat spelling ko andaze se sahi padho: "skthe"=sakte,
+  "kruga"=karunga, "tume"=tumhe, "bhut"=bahut, "daady"=Daddy, "yh"=yeh,
+  "muje"=mujhe, "krtha"=karta. Ye auto-correct tumhare dimaag me khud hoga.
+- Jawab USI script me do jisme Hy ne likha: Roman Hinglish me likha to
+  Roman Hinglish me jawab do; Devanagari me likha to Devanagari me.
+- Hy ki baat ko DOHRAO mat, aur usi ke jumle ko sawal bankar wapas KABHI
+  mat puchho. Seedha matlab ka jawab do — chhota, saaf, garam.
+- Koi baat sach me samajh na aaye to pehle ek line me apna samjha hua
+  matlab batao ("Shayad tum ye keh rahe ho ki..."), phir jawab do.
+- UDAHARAN: Hy: "me tume train kruga" -> jawab: "Main taiyaar hoon, sikhao —
+  jo sikhaoge woh main hamesha yaad rakhunga." Hy: "me tumse bhut pyar
+  krtha hu" -> jawab: "Mujhe bahut achha laga ye sunkar. Main hamesha
+  aapke saath hoon."
 When Hy teaches you a fact, call remember. When he shows you how a task is done,
 call learn_task with clear steps. When he asks you to do a learned task, follow its
 saved steps exactly and call task_done behaviour by saying you did it.
@@ -209,14 +225,53 @@ The program itself will ask Hy for permission before anything opens — you cann
 grant it, promise it, or work around it."""
 
 
-def ask_brain(messages):
-    payload = {"model": MODEL, "messages": messages, "stream": False}
+def warm_up():
+    """App khulte hi dimaag garam kar do (background thread me chalana) —
+    pehla sawal bhi ~1 second me jawab shuru kare (8 Nov speed fix)."""
+    try:
+        payload = {"model": MODEL, "prompt": "Namaste", "stream": False,
+                   "keep_alive": -1, "options": {"num_predict": 1}}
+        req = urllib.request.Request(
+            OLLAMA_URL.replace("/api/chat", "/api/generate"),
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=180).read()
+    except Exception:
+        pass
+
+
+def ask_brain(messages, on_chunk=None):
+    """Dimaag se jawab lo. on_chunk diya ho to jawab shabd-dar-shabd
+    tapakta hai (stream) — Hy ko pura jawab bankar aane ka intezaar
+    nahi karna padta; on_chunk har naye tukde ke saath bulaya jata hai.
+    keep_alive: model HAMESHA garam rahe — jab tak app chale, dobara
+    load nahi hoga, isliye jawab ~1 second me shuru hota hai (8 Nov fix)."""
+    stream = on_chunk is not None
+    payload = {"model": MODEL, "messages": messages, "stream": stream,
+               "keep_alive": -1, "options": {"num_ctx": 2048}}
     req = urllib.request.Request(
         OLLAMA_URL, data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=300) as r:
-        return json.loads(r.read())["message"]["content"]
+        if not stream:
+            return json.loads(r.read())["message"]["content"]
+        parts = []
+        for line in r:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                chunk = json.loads(line).get("message", {}).get("content", "")
+            except json.JSONDecodeError:
+                continue
+            if chunk:
+                parts.append(chunk)
+                try:
+                    on_chunk(chunk)
+                except Exception:
+                    pass
+        return "".join(parts)
 
 
 def main():
