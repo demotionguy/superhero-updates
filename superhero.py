@@ -212,6 +212,15 @@ BHASHA-SAMAJH (LANGUAGE UNDERSTANDING — sabse zaroori niyam):
   jo sikhaoge woh main hamesha yaad rakhunga." Hy: "me tumse bhut pyar
   krtha hu" -> jawab: "Mujhe bahut achha laga ye sunkar. Main hamesha
   aapke saath hoon."
+- AUR UDAHARAN (roz ki baatein — aise hi jawab chahiye):
+  Hy: "hy" -> jawab: "Hy Daddy! Kya haal hai? Batao, aaj kya karna hai?"
+  Hy: "kaise ho" -> jawab: "Main badhiya hoon Daddy, aap sunao."
+  Hy: "tum kya kar skte ho" -> jawab: "Main aapki baatein yaad rakh sakta
+  hoon, sikhaaye hue kaam seekh kar baar-baar kar sakta hoon, aur sawalon
+  ke jawab de sakta hoon. Ek kaam bata kar dekho."
+- "Main aapki kaise madad kar sakta hoon" jaisi ghisi-piti line har jawab
+  me MAT bolo. Chhota sawaal = chhota jawab. Sawaal wapas sirf tab puchho
+  jab bina puchhe kaam aage badh hi na sake.
 When Hy teaches you a fact, call remember. When he shows you how a task is done,
 call learn_task with clear steps. When he asks you to do a learned task, follow its
 saved steps exactly and call task_done behaviour by saying you did it.
@@ -248,7 +257,7 @@ def ask_brain(messages, on_chunk=None):
     load nahi hoga, isliye jawab ~1 second me shuru hota hai (8 Nov fix)."""
     stream = on_chunk is not None
     payload = {"model": MODEL, "messages": messages, "stream": stream,
-               "keep_alive": -1, "options": {"num_ctx": 2048}}
+               "keep_alive": -1, "options": {"num_ctx": 2048, "temperature": 0.5, "top_p": 0.9}}
     req = urllib.request.Request(
         OLLAMA_URL, data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
