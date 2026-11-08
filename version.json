@@ -1,11 +1,11 @@
 {
- "version": "3.8.3",
- "notes": "v3.8.3: DESKTOP APP FIX — asli wajah ye thi ki Hy desktop khidki (app) use karta hai, aur woh khidki salaam/padhai jaise pakke kaam bhi seedha chhote model par chhodti thi. Ab app me PROGRAM ke pakke jawab hain: salaam/haal-chaal ka jawab program dega ('How can I assist you' wali robot line ab aa hi nahi sakti), aur padhai-aadesh seedha khud-padhai se juda hai (0-se-college seedhi, apni summary, copy-jaanch). Web hisse me bhi salaam program se. Memory/skills ko haath nahi lagta. UPDATE KE BAAD APP PURI TARAH BAND KARKE DOBARA KHOLNA ZAROORI HAI.",
+ "version": "3.8.4",
+ "notes": "v3.8.4: NAMASKAR FIX (Hy ka aadesh) — salaam wala shabd hata diya; salaam ka pakka jawab ab seedha 'Namaskar' se shuru hota hai, aur app ki shuruaat wali line aur bade salaam-akshar bhi har jagah Namaskar hain. Baaki sab 3.8.3 wala desktop fix jaisa ka taisa. Memory/skills ko haath nahi lagta. UPDATE KE BAAD APP PURI TARAH BAND KARKE DOBARA KHOLNA ZAROORI HAI.",
  "files": [
   {
    "path": "superhero_web.py",
    "url": "superhero_web.py",
-   "sha256": "c82bb6f25e5bb7b404ca023e01b9cb818d78baefa28ff5b066202ed92ad0d45c"
+   "sha256": "8ea2f5c920ec68289ef066899e9d877070d53d610c71085f61a3b2e56c69fa4e"
   },
   {
    "path": "skills.py",
@@ -55,7 +55,7 @@
   {
    "path": "superhero_app.py",
    "url": "superhero_app.py",
-   "sha256": "6e2491a06334956a7d43ef47e263768f973a1ba7e59619c4329c0700a6570d3e"
+   "sha256": "a7973481513e91309744c8490016522b9ec117fe4572586706b78f313c93a080"
   },
   {
    "path": "IDENTITY.md",
@@ -125,7 +125,7 @@
   {
    "path": "version.txt",
    "url": "version.txt",
-   "sha256": "7ce11b1c872a03fe2055e39edc35a721eccaecd697a4346ecf2e00bda50f9176"
+   "sha256": "1010aaba274e7d9b4851f33a8e9d3436fd7e34ab8eb208dc94fc95b29110e094"
   },
   {
    "path": "study.py",
