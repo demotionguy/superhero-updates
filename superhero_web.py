@@ -918,6 +918,27 @@ def _study_command(user_text):
     return None
 
 
+_SALAAM_SET = {"hy", "hii", "hiii", "hello", "helloo", "hi", "hey", "namaste",
+               "namaskar", "salam", "salaam", "ram ram", "good morning",
+               "good afternoon", "good evening", "namaste daddy", "hello daddy"}
+_HAAL_SET = {"kaise ho", "kya haal hai", "kaisa hai", "aur batao", "kya haal",
+             "kaise ho daddy", "tum kaise ho"}
+
+
+def _greeting_reply(user_text):
+    """Saf salaam/haal-chaal ka jawab PROGRAM deta hai (v3.8.3) —
+    chhota model robot wali angrezi line na bol paye, isliye pakka."""
+    import re as _re
+    low = _re.sub(r"[!.,?~*]+", " ", user_text.lower())
+    low = _re.sub(r"\s+", " ", low).strip()
+    naam = "Daddy" if "daddy" in read_file(MEMORY_MD).lower() else "Hy"
+    if low in _HAAL_SET:
+        return f"Main badhiya hoon {naam}, aap sunao — kya chal raha hai?"
+    if low in _SALAAM_SET:
+        return f"Namaste {naam}! Kya haal hai? Batao, aaj kya karna hai?"
+    return None
+
+
 def _wants_internet(user_text):
     low = user_text.lower()
     return any(t in low for t in _INTERNET_TRIGGERS)
@@ -1106,6 +1127,13 @@ def _chat_turn_impl(token, user_text):
             messages.append({"role": "user", "content": user_text})
             messages.append({"role": "assistant", "content": _suc})
             return (learn_note + "\n" if learn_note else "") + _suc
+
+        # 1.46) SALAAM — pakka program-jawab (v3.8.3)
+        _gr = _greeting_reply(user_text)
+        if _gr:
+            messages.append({"role": "user", "content": user_text})
+            messages.append({"role": "assistant", "content": _gr})
+            return (learn_note + "\n" if learn_note else "") + _gr
 
         # 1.5) SKILL COMMAND — Hy khud bole tabhi skill aayegi, aur kisi tarah nahi
         skill_reply = _skill_command(user_text)
