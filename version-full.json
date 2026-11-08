@@ -1,16 +1,16 @@
 {
- "version": "3.7.1",
- "notes": "v3.7.1 SUDHAAR: Dimaag-Lagao download ab resume wala hai — internet beech me tute to download wahi se aage badhta hai, shuru se nahi; adhoori file par install kabhi nahi hota. Baaki sab v3.7.0 jaisa hi. Memory/skills ko haath nahi lagta.",
+ "version": "3.8.0",
+ "notes": "v3.8.0: SABSE TEZ + SEEKHA-HUA UPDATE — jawab ~1 second me SHURU (dimaag hamesha garam + app khulte hi pre-warm + jawab shabd-dar-shabd stream) + SKILL KATAALOG 150 (Seekh-Apnao: skill ka tareeka seekh kar APNI skill, repo par nirbharta khatm; suraksha jaanch — Chinese/hacker/zeher wali repo hamesha bahar) + Bhasha-Samajh + Dimaag-Lagao fix. Memory/skills ko haath nahi lagta.",
  "files": [
   {
    "path": "superhero_web.py",
    "url": "superhero_web.py",
-   "sha256": "615237cb7b1301ec602ce2832c7439d3da4d33028dec6194e10b9973aa86b48b"
+   "sha256": "73e27bf1530832a565a5b7d62dce3fa2bf7c419b8b9337a0486726313f673155"
   },
   {
    "path": "skills.py",
    "url": "skills.py",
-   "sha256": "06286b2fbf741d0d03765f82a1d6659971a4d39b47cc0fb190b0416329a0475c"
+   "sha256": "c4444e1e445c07782a85b01e9dcf75aea60ee6d2f3fea73d6b7c68537bafa771"
   },
   {
    "path": "apna_dimaag.py",
@@ -50,12 +50,12 @@
   {
    "path": "superhero.py",
    "url": "superhero.py",
-   "sha256": "a5a2673c03c0fb35ca4b5ea1d3a15ca100c9e21b6bea7cd6af45cd3cf22323db"
+   "sha256": "1aedf3f1813ae42d624e235d81d39e3dfc23530cff695d9d08f0a39a94a7b26c"
   },
   {
    "path": "superhero_app.py",
    "url": "superhero_app.py",
-   "sha256": "fdccd3a836e76d5efdfb2d18c3f7fe329541324fca1b897054621390d68e3641"
+   "sha256": "eeca64d7aba6cf35e8764501830bb92273d2ce9a106e0f40d33219f8a84101b6"
   },
   {
    "path": "IDENTITY.md",
@@ -110,7 +110,7 @@
   {
    "path": "Dimaag-Lagao.bat",
    "url": "Dimaag-Lagao.bat",
-   "sha256": "4383c94b4375201ac8bada06d5955df9dabbfbbb8adf89d635ed57b97d17fb96"
+   "sha256": "18e5eab69a942a5cd9362a09f2d087a1bb2b6ef9b3bf12e9cf6075315f94c495"
   },
   {
    "path": "Superhero-Start-Karo.bat",
@@ -125,7 +125,12 @@
   {
    "path": "version.txt",
    "url": "version.txt",
-   "sha256": ""
+   "sha256": "da2b77adbd557e6ddeb4d4e49019eb8b75567c055d0a03cd01af5b94f7ee837d"
+  },
+  {
+   "path": "study.py",
+   "url": "study.py",
+   "sha256": "d295fd397e02d355f4973b9b7ada2077ee6d8f2514b5ad671c09774498846ef2"
   }
  ]
 }
