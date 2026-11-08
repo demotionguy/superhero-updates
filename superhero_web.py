@@ -47,6 +47,7 @@ import fields as fields_mod
 import storage as storage_mod
 import skills as skills_mod
 import tasks as tasks_mod
+import study as study_mod
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE, "data")
@@ -223,6 +224,23 @@ BHASHA-SAMAJH (LANGUAGE UNDERSTANDING — sabse zaroori niyam):
 - "Main aapki kaise madad kar sakta hoon" jaisi ghisi-piti line har jawab
   me MAT bolo. Chhota sawaal = chhota jawab. Sawaal wapas sirf tab puchho
   jab bina puchhe kaam aage badh hi na sake.
+ROLE-LOCK (kabhi ulta mat karna — v3.8.2):
+- TUM Superhero ho; Hy tumhare Pita/Creator hain. Baat hamesha TUMSE
+  HY KO hoti hai. Kabhi aisa jawab mat likho jo aisa lage jaise Hy ne
+  TUMHE likha ho; kabhi Hy bankar Hy ko sandesh mat likho; kabhi ulta
+  Hy se apne liye kuch mat maango ("please mujhe sikhao" jaisi baat
+  BILKUL GALAT hai). Tum maangne wale nahi ho — tum seva karne wale ho,
+  aur aadesh milne par kaam SHURU karte ho.
+- GALAT udaharan: Hy: "internet se books study kro" -> "Hy, please
+  teach me about studying..." — YE SABSE BADI GALTI HAI, kabhi mat karna.
+  SAHI: aise aadesh program khud sambhalta hai; tumhare hisse aaye to
+  bas garam haami bharo: "Samajh gaya Daddy, padhai shuru hoti hai."
+- Robot wali angrezi lines SAKHT BAND: "How can I help you today?",
+  "How may I assist you?", "As an AI language model..." — kabhi nahi.
+  Chhota salaam (hy / hello / namaste) aaye to sirf chhota sa garam
+  salaam wapas karo — apne aur Hy ke naam ke saath, usi bhasha me.
+- Kuch sach me samajh na aaye to KAHANI MAT BANAO — seedha ek chhota
+  sawal puchho, ya apna samjha hua matlab ek line me bata kar aage badho.
 When Hy teaches you a fact, call remember. When he shows you how a task is done,
 call learn_task with clear steps. When he asks you to do a learned task, follow its
 saved steps exactly and then call task_done with the task name.
@@ -816,6 +834,90 @@ def _run_cycle_background():
     threading.Thread(target=_work, daemon=True).start()
 
 
+_study_running = {"on": False, "stop": False}
+
+
+def _catalog_topics():
+    try:
+        return [e.get("name", "") for e in skills_mod.CATALOG if e.get("name")]
+    except Exception:
+        return None
+
+
+def _run_study_background(steps=3):
+    """Khud-padhai peeche chalao — ek aadesh par kuch kadam, app rukta nahi.
+    Har kadam: kitab/vishay padho -> APNI summary (copy-jaanch ke saath)
+    -> gyaan-yaad. Sirf PADHNA hai — Hy ka aadesh hi iski ijaazat hai."""
+    if _study_running["on"]:
+        return False
+    _study_running["on"] = True
+    _study_running["stop"] = False
+
+    def _work():
+        try:
+            for _ in range(steps):
+                if _study_running["stop"] or _storage_status()["full"]:
+                    break
+                study_mod.study_step(
+                    _memory_root,
+                    brain=lambda ms: ask_brain(
+                        [{"role": "system", "content": system_prompt()}] + ms),
+                    search_fn=apna_dimaag.web_search,
+                    diary_log=lambda k, t: diary_mod.log_event(_memory_root, k, t),
+                    catalog_topics=_catalog_topics())
+        except Exception:
+            pass
+        finally:
+            _study_running["on"] = False
+
+    threading.Thread(target=_work, daemon=True).start()
+    return True
+
+
+def _study_command(user_text):
+    """Hy ke padhai-aadesh — program pakka sambhalta hai (v3.8.2).
+    Hy ke apne jumle ('internet se 0 se college tak books study kro')
+    seedha khud-padhai se judte hain; model kahani nahi banata."""
+    import re as _re
+    low = user_text.lower()
+    # ROK
+    if any(p in low for p in ("padhai band", "padhai rok", "study band", "study rok", "padhna band")):
+        _study_running["stop"] = True
+        return "Padhai rok di, Daddy. Jitna padha, woh gyaan-yaad me surakshit hai — wahan se aage kabhi bhi phir shuru ho jayegi."
+    # PRAGATI
+    if any(p in low for p in ("padhai ki pragati", "kitna padha", "kya padha", "padhai kahan tak",
+                               "study progress", "kitni padhai")):
+        st = study_mod.load_state(_memory_root)
+        rev = study_mod.weekly_review(_memory_root)
+        last = st.get("history", [])[-3:]
+        last_txt = "; ".join(h.get("title", "") for h in last) or "abhi koi chapter pura nahi"
+        chal = "Padhai abhi peeche chal rahi hai. " if _study_running["on"] else ""
+        return (f"{chal}Pragati: 0-se-college ki seedhi me {rev['phase1_done']}/{rev['phase1_total']} "
+                f"kitabein/vishay pure hue. Aakhri padhe hue: {last_txt}. "
+                f"Vishay-war notes: " + ", ".join(f"{k} {v}" for k, v in rev["counts"].items()) + ".")
+    # SHURU — Hy ke aadesh ke kai roop
+    start = (
+        _re.search(r"(study|padhai|padhna|padho)\b[^.]{0,40}\b(karo|kro|kar|shuru|chalu|chaalu)\b", low)
+        or _re.search(r"\b(karo|kro|shuru|chalu)\b[^.]{0,30}\b(study|padhai)", low)
+        or "books study" in low or "book study" in low or "khud padhai" in low
+        or "start studying" in low or "study books" in low
+        or ("internet se" in low and ("study" in low or "padhai" in low or "padho" in low))
+    )
+    if start:
+        st = study_mod.load_state(_memory_root)
+        nxt = study_mod.next_item(st, _catalog_topics())
+        if _run_study_background(steps=3):
+            diary_mod.log_event(_memory_root, "study",
+                                f"Hy ke aadesh par khud-padhai shuru: {nxt['title']} se.")
+            return (f"Padhai shuru kar di hai, Daddy 📚 — seedhi 0 se college tak ki bandhi kitab-soochi se chalegi, "
+                    f"phir university star ki khud-padhai. Pehla vishay: {nxt['title']} ({nxt['subject']}). "
+                    f"Main peeche padhta rahunga; har chapter ki summary APNE shabdon me gyaan-yaad me rahegi "
+                    f"(copy-paste wali summary program khud reject kar deta hai). "
+                    f"Pragati: bolo 'padhai ki pragati' — rokna ho to: 'padhai band karo'.")
+        return "Padhai pehle se hi peeche chal rahi hai, Daddy — ek chapter khatm hote hi agla khud shuru ho jata hai."
+    return None
+
+
 def _wants_internet(user_text):
     low = user_text.lower()
     return any(t in low for t in _INTERNET_TRIGGERS)
@@ -997,6 +1099,13 @@ def _chat_turn_impl(token, user_text):
             messages.append({"role": "user", "content": user_text})
             messages.append({"role": "assistant", "content": _ans})
             return (learn_note + "\n" if learn_note else "") + _ans
+
+        # 1.45) STUDY COMMAND — Hy ka padhai-aadesh seedha khud-padhai se (v3.8.2)
+        _suc = _study_command(user_text)
+        if _suc:
+            messages.append({"role": "user", "content": user_text})
+            messages.append({"role": "assistant", "content": _suc})
+            return (learn_note + "\n" if learn_note else "") + _suc
 
         # 1.5) SKILL COMMAND — Hy khud bole tabhi skill aayegi, aur kisi tarah nahi
         skill_reply = _skill_command(user_text)
