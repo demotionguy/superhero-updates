@@ -65,7 +65,7 @@ _MEM_ROOT = os.path.dirname(core.MEMORY_MD)
 _study_state = {"on": False, "stop": False}
 
 _SALAAM = {"hy", "hii", "hiii", "hello", "helloo", "hi", "hey", "namaste",
-           "namaskar", "salam", "salaam", "ram ram", "good morning",
+           "namaskar", "ram ram", "good morning",
            "good afternoon", "good evening", "namaste daddy", "hello daddy"}
 _HAAL = {"kaise ho", "kya haal hai", "kaisa hai", "aur batao", "kya haal",
          "kaise ho daddy", "tum kaise ho"}
@@ -119,7 +119,7 @@ def program_reply(text):
     if low in _HAAL:
         return f"Main badhiya hoon {naam}, aap sunao — kya chal raha hai?"
     if low in _SALAAM:
-        return f"Namaste {naam}! Kya haal hai? Batao, aaj kya karna hai?"
+        return f"Namaskar {naam}! Kya haal hai? Batao, aaj kya karna hai?"
     # --- khud-padhai (web wale _study_command jaisi pehchan) ---
     if any(p in low for p in ("padhai band", "padhai rok", "study band", "study rok", "padhna band")):
         _study_state["stop"] = True
@@ -280,7 +280,7 @@ class SuperheroApp:
     def _build_main(self):
         main = tk.Frame(self.root, bg=BG)
         main.pack(side="left", fill="both", expand=True)
-        self.greeting = tk.Label(main, text="Namaste, Hy", font=("Georgia", 22),
+        self.greeting = tk.Label(main, text="Namaskar, Hy", font=("Georgia", 22),
                                  bg=BG, fg=INK)
         self.greeting.pack(pady=(16, 0))
         tk.Label(main, text="Mai Superhero — jo sikhaoge, hamesha yaad rakhunga.",
@@ -333,7 +333,7 @@ class SuperheroApp:
         for m in self.history:
             self.say("hy" if m["role"] == "user" else "hero", m["content"], store=False)
         if not self.history:
-            self.say("hero", "Namaste Hy! Kuch bولو — mai sun raha hoon.", store=False)
+            self.say("hero", "Namaskar Hy! Kuch bولو — mai sun raha hoon.", store=False)
 
     def new_chat(self):
         self.save_chat()
@@ -342,7 +342,7 @@ class SuperheroApp:
         self.chat.configure(state="normal")
         self.chat.delete("1.0", "end")
         self.chat.configure(state="disabled")
-        self.say("hero", "Namaste Hy! Mai Superhero hoon — tumhara apna. "
+        self.say("hero", "Namaskar Hy! Mai Superhero hoon — tumhara apna. "
                          "Jo bologe, samjhunga; jo sikhaoge, hamesha yaad rakhunga.", store=False)
         self.save_chat()
         self.refresh_chat_list()
