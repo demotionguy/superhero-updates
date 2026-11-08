@@ -1,11 +1,11 @@
 {
- "version": "3.8.1",
- "notes": "v3.8.1: SAMAJH FIX — chhote dimaag ki uljhan ghatane ke liye temperature 0.5 (jawab zyada seedha, kam bhatka hua) + roz ki baaton ke pakke udaharan (hy/kaise ho/tum kya kar sakte ho) + ghisi-piti 'kaise madad kar sakta hoon' wali line par rok. Memory/skills ko haath nahi lagta.",
+ "version": "3.8.2",
+ "notes": "v3.8.2: SAMAJH + PADHAI-JOD FIX — Hy ke padhai-aadesh ('internet se books study kro') ab seedha khud-padhai se judte hain: 0-se-college kitab-seedhi peeche chalti hai, har chapter ki summary apne shabdon me gyaan-yaad me (copy-jaanch ke saath); 'padhai ki pragati' / 'padhai band karo' bhi chalte hain. ROLE-LOCK: Superhero kabhi Hy bankar ulta sandesh nahi likhega, robot wali angrezi line ('How can I help you') band, salaam ka jawab apne andaz me. Memory/skills ko haath nahi lagta.",
  "files": [
   {
    "path": "superhero_web.py",
    "url": "superhero_web.py",
-   "sha256": "7e46975f2ffc6adae9b788e45b8160f2493934bb8d84c7564a5bdd176c9ce925"
+   "sha256": "34d3b65a059fe92a531e4465faa65d61ff0e58d0b07d30bb768d0358fc10f5aa"
   },
   {
    "path": "skills.py",
@@ -50,7 +50,7 @@
   {
    "path": "superhero.py",
    "url": "superhero.py",
-   "sha256": "b140f15e6c4bcdce795993f4ebcb41d8b9d6cdec6b44a7a3f324db0caa3d155d"
+   "sha256": "2d90488d868d59a5838691bfd84dea4b528f06756e083e7de8489b2a69d23c76"
   },
   {
    "path": "superhero_app.py",
@@ -125,7 +125,7 @@
   {
    "path": "version.txt",
    "url": "version.txt",
-   "sha256": "20a66812315a1b6c85872c8858dd9585f025c7ff9e4825e5c3d9d02465f56b69"
+   "sha256": "0413223d6fd6e7a675cb0871e1d97cdca2e62e78be9342cc6f6dce23fe319bc6"
   },
   {
    "path": "study.py",
