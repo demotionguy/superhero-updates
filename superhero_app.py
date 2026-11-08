@@ -27,6 +27,10 @@ from tkinter import scrolledtext
 
 import superhero as core
 import updater
+import apna_dimaag
+import diary as diary_mod
+import skills as skills_mod
+import study as study_mod
 
 OLLAMA_TAGS = "http://localhost:11434/api/tags"
 MODEL = core.MODEL
@@ -51,6 +55,111 @@ def find_ollama():
         if path and os.path.isfile(path):
             return path
     return None
+
+# ---------- PROGRAM KE PAKKE JAWAB (v3.8.3) ----------
+# Desktop app seedha dimaag se baat karta tha — isliye salaam aur
+# padhai-aadesh jaise pakke kaam chhote model ki marzi par the, aur woh
+# robot wali angrezi line bol deta tha. Ab ye kaam PROGRAM sambhalta hai:
+# salaam ka jawab aur khud-padhai ka aadesh model ke paas jata hi nahi.
+_MEM_ROOT = os.path.dirname(core.MEMORY_MD)
+_study_state = {"on": False, "stop": False}
+
+_SALAAM = {"hy", "hii", "hiii", "hello", "helloo", "hi", "hey", "namaste",
+           "namaskar", "salam", "salaam", "ram ram", "good morning",
+           "good afternoon", "good evening", "namaste daddy", "hello daddy"}
+_HAAL = {"kaise ho", "kya haal hai", "kaisa hai", "aur batao", "kya haal",
+         "kaise ho daddy", "tum kaise ho"}
+
+
+def _hy_naam():
+    try:
+        return "Daddy" if "daddy" in core.read_file(core.MEMORY_MD).lower() else "Hy"
+    except Exception:
+        return "Hy"
+
+
+def _run_study_bg(steps=3):
+    """Khud-padhai peeche chalao (sirf padhna; aadesh hi ijaazat hai)."""
+    if _study_state["on"]:
+        return False
+    _study_state["on"] = True
+    _study_state["stop"] = False
+
+    def _work():
+        try:
+            topics = None
+            try:
+                topics = [e.get("name", "") for e in skills_mod.CATALOG if e.get("name")]
+            except Exception:
+                pass
+            for _ in range(steps):
+                if _study_state["stop"]:
+                    break
+                study_mod.study_step(
+                    _MEM_ROOT,
+                    brain=lambda ms: core.ask_brain(
+                        [{"role": "system", "content": core.system_prompt()}] + ms),
+                    search_fn=apna_dimaag.web_search,
+                    diary_log=lambda k, t: diary_mod.log_event(_MEM_ROOT, k, t),
+                    catalog_topics=topics)
+        except Exception:
+            pass
+        finally:
+            _study_state["on"] = False
+
+    threading.Thread(target=_work, daemon=True).start()
+    return True
+
+
+def program_reply(text):
+    """Pakka program-jawab ho to woh, warna None (dimaag bolega)."""
+    low = re.sub(r"[!.,?~*]+", " ", text.lower())
+    low = re.sub(r"\s+", " ", low).strip()
+    naam = _hy_naam()
+    if low in _HAAL:
+        return f"Main badhiya hoon {naam}, aap sunao — kya chal raha hai?"
+    if low in _SALAAM:
+        return f"Namaste {naam}! Kya haal hai? Batao, aaj kya karna hai?"
+    # --- khud-padhai (web wale _study_command jaisi pehchan) ---
+    if any(p in low for p in ("padhai band", "padhai rok", "study band", "study rok", "padhna band")):
+        _study_state["stop"] = True
+        return "Padhai rok di, Daddy. Jitna padha, woh gyaan-yaad me surakshit hai — wahan se aage kabhi bhi phir shuru ho jayegi."
+    if any(p in low for p in ("padhai ki pragati", "kitna padha", "kya padha", "padhai kahan tak",
+                              "study progress", "kitni padhai")):
+        st = study_mod.load_state(_MEM_ROOT)
+        rev = study_mod.weekly_review(_MEM_ROOT)
+        last = st.get("history", [])[-3:]
+        last_txt = "; ".join(h.get("title", "") for h in last) or "abhi koi chapter pura nahi"
+        chal = "Padhai abhi peeche chal rahi hai. " if _study_state["on"] else ""
+        return (f"{chal}Pragati: 0-se-college ki seedhi me {rev['phase1_done']}/{rev['phase1_total']} "
+                f"kitabein/vishay pure hue. Aakhri padhe hue: {last_txt}. "
+                f"Vishay-war notes: " + ", ".join(f"{k} {v}" for k, v in rev["counts"].items()) + ".")
+    start = (
+        re.search(r"(study|padhai|padhna|padho)\b[^.]{0,40}\b(karo|kro|kar|shuru|chalu|chaalu)\b", low)
+        or re.search(r"\b(karo|kro|shuru|chalu)\b[^.]{0,30}\b(study|padhai)\b", low)
+        or "books study" in low or "book study" in low or "khud padhai" in low
+        or "start studying" in low or "study books" in low
+        or ("internet se" in low and ("study" in low or "padhai" in low or "padho" in low))
+    )
+    if start:
+        st = study_mod.load_state(_MEM_ROOT)
+        topics = None
+        try:
+            topics = [e.get("name", "") for e in skills_mod.CATALOG if e.get("name")]
+        except Exception:
+            pass
+        nxt = study_mod.next_item(st, topics)
+        if _run_study_bg(steps=3):
+            diary_mod.log_event(_MEM_ROOT, "study",
+                                f"Hy ke aadesh par khud-padhai shuru: {nxt['title']} se.")
+            return (f"Padhai shuru kar di hai, Daddy 📚 — seedhi 0 se college tak ki bandhi kitab-soochi se chalegi, "
+                    f"phir university star ki khud-padhai. Pehla vishay: {nxt['title']} ({nxt['subject']}). "
+                    f"Main peeche padhta rahunga; har chapter ki summary APNE shabdon me gyaan-yaad me rahegi "
+                    f"(copy-paste wali summary program khud reject kar deta hai). "
+                    f"Pragati: bolo 'padhai ki pragati' — rokna ho to: 'padhai band karo'.")
+        return "Padhai pehle se hi peeche chal rahi hai, Daddy — ek chapter khatm hote hi agla khud shuru ho jata hai."
+    return None
+
 
 # ---- the face: warm paper, soft sidebar, clay accent ----
 BG = "#FAF9F5"
@@ -535,34 +644,36 @@ class SuperheroApp:
                 self.root.after(0, lambda t=st["buf"]: self._stream_begin(t))
 
             return cb
-        messages = [{"role": "system", "content": core.system_prompt()}] + self.history[-12:]
-        try:
-            reply = core.ask_brain(messages, on_chunk=make_cb()).strip()
-            if reply.startswith("{") and '"tool"' in reply:
-                call = json.loads(reply)
-                if call.get("tool") == "open_path":
-                    result = core.guard_open(call.get("args", {}).get("path", ""),
-                                             self.hy_named_paths, ask=self.gui_ask)
-                else:
-                    fn = core.TOOLS.get(call.get("tool", ""))
-                    result = fn(**call.get("args", {})) if fn else "Ye haath abhi mere paas nahi hai."
-                self.history.append({"role": "assistant", "content": reply})
-                messages = ([{"role": "system", "content": core.system_prompt()}] + self.history[-12:]
-                            + [{"role": "user", "content": f"(haath ka natija: {result}) Ab Hy ko apne shabdon me bata do."}])
+        reply = program_reply(text)  # pakke kaam (salaam/padhai) — model se pehle (v3.8.3)
+        if reply is None:
+            messages = [{"role": "system", "content": core.system_prompt()}] + self.history[-12:]
+            try:
                 reply = core.ask_brain(messages, on_chunk=make_cb()).strip()
-        except Exception as e:
-            # Raw English/Python error kabhi mat dikhao — wajah ke hisaab se saaf Hinglish
-            err = str(e).lower()
-            if "10061" in err or "connection" in err or "urlopen" in err or "refused" in err:
-                if find_ollama() is None:
-                    reply = self.MSG_NO_OLLAMA
+                if reply.startswith("{") and '"tool"' in reply:
+                    call = json.loads(reply)
+                    if call.get("tool") == "open_path":
+                        result = core.guard_open(call.get("args", {}).get("path", ""),
+                                                 self.hy_named_paths, ask=self.gui_ask)
+                    else:
+                        fn = core.TOOLS.get(call.get("tool", ""))
+                        result = fn(**call.get("args", {})) if fn else "Ye haath abhi mere paas nahi hai."
+                    self.history.append({"role": "assistant", "content": reply})
+                    messages = ([{"role": "system", "content": core.system_prompt()}] + self.history[-12:]
+                                + [{"role": "user", "content": f"(haath ka natija: {result}) Ab Hy ko apne shabdon me bata do."}])
+                    reply = core.ask_brain(messages, on_chunk=make_cb()).strip()
+            except Exception as e:
+                # Raw English/Python error kabhi mat dikhao — wajah ke hisaab se saaf Hinglish
+                err = str(e).lower()
+                if "10061" in err or "connection" in err or "urlopen" in err or "refused" in err:
+                    if find_ollama() is None:
+                        reply = self.MSG_NO_OLLAMA
+                    else:
+                        reply = self.MSG_OLLAMA_DOWN
+                        threading.Thread(target=self._try_start_serve, daemon=True).start()
                 else:
-                    reply = self.MSG_OLLAMA_DOWN
-                    threading.Thread(target=self._try_start_serve, daemon=True).start()
-            else:
-                reply = ("Abhi jawab dene me kuch gadbad ho gayi. Ek baar phir bol kar dekho — "
-                         "na ho to app band karke dobara kholo.")
-            self.root.after(0, self.check_setup)
+                    reply = ("Abhi jawab dene me kuch gadbad ho gayi. Ek baar phir bol kar dekho — "
+                             "na ho to app band karke dobara kholo.")
+                self.root.after(0, self.check_setup)
         self.history.append({"role": "assistant", "content": reply})
         def done_ui():
             if stream_state["shown"]:
